@@ -62,7 +62,8 @@ console.log(` ${firstName}`.repeat(5));
 var box = {
     color: 'green',
     position: 1,
-    // this method also we can use arrow function but then THIS will be lexical as well meaning THIS refers to the surrounding scope which happens to be the global scope 
+    // for clickMe method also, we can use arrow function but then THIS will be lexical and makes THIS
+    // refers to the surrounding scope of the clickMe method which happens to be the global scope 
     // which means THIS will refer to global this
     clickMe: function() {
        
