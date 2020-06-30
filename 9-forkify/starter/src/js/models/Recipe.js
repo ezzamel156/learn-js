@@ -12,6 +12,7 @@ export default class Recipe {
             this.img = result.data.recipe.image_url;
             this.url = result.data.recipe.source_url;
             this.ingredients = result.data.recipe.ingredients;
+            this.parseIngredients();
         } catch (error) {
             alert(error);
             throw error;
@@ -26,5 +27,59 @@ export default class Recipe {
 
     calculateServings() {
         this.servings = 4;
+    }
+
+    parseIngredients() {
+        const unitsLong = ['tablespoons', 'tablespoon', 'ounces', 'ounce', 'teaspoons', 'teaspoon', 'cups', 'pounds'];
+        const unitsShort = ['tbsp', 'tbsp', 'oz', 'oz', 'tsp', 'tsp', 'cup', 'pound'];
+        const newIngredients = this.ingredients.map(el => {
+            // 1) uniform units
+            let ingredient = el.toLowerCase();
+            unitsLong.forEach((unit, i) => {
+                ingredient = ingredient.replace(unit, unitsShort[i]);
+            });
+
+            // 2) reform parenthesis
+            ingredient = ingredient.replace(/ *\([^)]*\) */g, ' ');
+
+            // 3) parse ingredients into count, unit and ingredient
+            const arrayIngredient = ingredient.split(' ');
+            const unitIndex = arrayIngredient.findIndex(el2 => unitsShort.includes(el2));
+
+            let objIngredient;
+            if (unitIndex > -1) {
+                // there's a unit
+                // ex. 4 1/2 cups, arrayCount is [4, 1/2]
+                const arrayCount = arrayIngredient.slice(0, unitIndex);
+
+                let count;
+                if (arrayCount.length === 1) {
+                    count = eval(arrayCount[0].replace('-', '+'));
+                } else {
+                    count = eval(arrayCount.join('+'));
+                }
+                objIngredient = {
+                    count,
+                    unit: arrayIngredient[unitIndex],
+                    ingredient : arrayIngredient.slice(unitIndex + 1).join(' ')
+                };
+            } else if (parseInt(arrayIngredient[0], 10)) {
+                // no unit but first element is a number
+                objIngredient = {
+                    count: parseInt(arrayIngredient[0], 10),
+                    unit: '',
+                    ingredient: arrayIngredient.slice(1).join(' ')
+                };
+            } else if (unitIndex === -1) {
+                // no unit and no first element number
+                objIngredient = {
+                    count: 1,
+                    unit: '',
+                    ingredient
+                };
+            }
+            return objIngredient;
+        });
+        this.ingredients = newIngredients;
     }
 }
