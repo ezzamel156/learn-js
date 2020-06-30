@@ -6,6 +6,7 @@ export default class Search {
     
     async getResults() {
         try {
+            //destructuring
             const { 
                 data : {
                     recipes
