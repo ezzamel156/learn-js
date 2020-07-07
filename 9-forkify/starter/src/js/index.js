@@ -2,7 +2,7 @@ import Search from './models/Search';
 import Recipe from './models/Recipe';
 import * as searchView from './views/searchView';
 import * as recipeView from './views/recipeView';
-import { elements, loader } from './views/base'
+import { elements, loader } from './views/base';
 
 /** Global state of app
  * - search object
@@ -56,7 +56,11 @@ const controlRecipe = async () => {
     const id = window.location.hash.replace('#', '');
     if(id) {
         // prepare ui
+        recipeView.clearRecipe();
         loader.render(elements.recipe);
+
+        // highlight selected result
+        if(state.search) searchView.highlightSelected(id);
 
         // create new recipe
         state.recipe =  new Recipe(id);
@@ -71,7 +75,9 @@ const controlRecipe = async () => {
     
             // render recipe
             loader.clear();
-            console.log(state.recipe);
+            recipeView.renderRecipe(state.recipe);
+            
+            // console.log(state.recipe);
         } catch (error) {
             alert(error);
         }

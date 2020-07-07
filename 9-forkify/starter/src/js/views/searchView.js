@@ -11,6 +11,14 @@ export const clearResults = () => {
     elements.searchResultPages.innerHTML = '';
 }
 
+export const highlightSelected = id => {
+    const resultsArray = Array.from(document.querySelectorAll('.results__link--active'));
+    resultsArray.forEach(el => {
+        el.classList.remove('results__link--active');
+    })
+    document.querySelector(`a[href="#${id}"]`).classList.add('results__link--active');
+}
+
 export const limitRecipeTitle = (title, limit = 17) => {
     const newTitle = [];
     if(title.length > limit) {
@@ -25,16 +33,16 @@ export const limitRecipeTitle = (title, limit = 17) => {
     return title;
 }
 
-const renderRecipe = recipe => {
+const renderResult = result => {
     const markup = `
         <li>
-            <a class="results__link" href="#${recipe.recipe_id}">
+            <a class="results__link" href="#${result.recipe_id}">
                 <figure class="results__fig">
-                    <img src="${recipe.image_url}" alt="${recipe.title}">
+                    <img src="${result.image_url}" alt="${result.title}">
                 </figure>
                 <div class="results__data">
-                    <h4 class="results__name" title="${recipe.title}">${limitRecipeTitle(recipe.title)}</h4>
-                    <p class="results__author">${recipe.publisher}</p>
+                    <h4 class="results__name" title="${result.title}">${limitRecipeTitle(result.title)}</h4>
+                    <p class="results__author">${result.publisher}</p>
                 </div>
             </a>
         </li>
@@ -68,12 +76,12 @@ const renderPaginationButton = (page, resultCount, resultPerPage) => {
     elements.searchResultPages.insertAdjacentHTML('afterbegin', button);
 }
 
-export const renderResults = (recipes, page = 1, resultPerPage = 10) => {
+export const renderResults = (results, page = 1, resultPerPage = 10) => {
     // render result
     const start = (page - 1) * 10;
     const end = page * 10;
-    recipes.slice(start, end).forEach(renderRecipe);
+    results.slice(start, end).forEach(renderResult);
 
     // render pagination
-    renderPaginationButton(page, recipes.length, resultPerPage);
+    renderPaginationButton(page, results.length, resultPerPage);
 };
